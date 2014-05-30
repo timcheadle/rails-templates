@@ -16,7 +16,7 @@ gem_group :development, :test do
   gem 'rspec-rails', '~> 2.14.2'
   gem 'pry'
   gem 'pry-rails'
-  gem 'pry-debugger'
+  gem 'pry-byebug'
   gem 'pry-awesome_print'
   gem 'guard-rspec'
   gem 'guard-bundler'
