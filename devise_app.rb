@@ -32,6 +32,7 @@ gem_group :test do
   gem 'database_cleaner'
 end
 
+run 'rm .gitignore'
 file '.gitignore', <<-GITIGNORE
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 #
