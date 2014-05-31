@@ -11,6 +11,7 @@ gem "pg"
 gem 'devise', '~> 3.2.4'
 gem 'bootstrap-sass'
 gem 'font-awesome-sass'
+gem 'redcarpet'
 
 gem_group :development, :test do
   gem 'rspec-rails', '~> 2.14.2'
@@ -107,7 +108,7 @@ RSpec.configure do |config|
 end
 DB_CLEANER
 
-app_name = ARGV[0]
+app_name = ARGV[1]
 
 file "config/database.yml.example", <<-DATABASE
 development:
@@ -139,13 +140,30 @@ production:
   min_messages: warning
 DATABASE
 
+
+run "rm app/helpers/application_helper.rb"
+file "app/helpers/application_helper.rb", <<-HELPERS
+module ApplicationHelper
+  def is_active?(action)
+    'active' if params[:controller] == 'welcome' && params[:action] == action
+  end
+
+  def markdown(&block)
+    content = capture(&block)
+    renderer = Redcarpet::Render::HTML
+    Redcarpet::Markdown.new(renderer).render(content).html_safe
+  end
+end
+HELPERS
+
+
 run "bundle install"
 
 generate "rspec:install"
 run "mkdir spec/features"
 run "bundle exec guard init"
 run "rm config/database.yml; cp config/database.yml.example config/database.yml"
-rake "db:create:all"
+rake "db:create"
 
 generate "devise:install"
 generate "devise User"
@@ -169,10 +187,10 @@ if yes?("Use Twitter bootstrap?")
   append_file 'app/assets/javascripts/application.js', '//= require bootstrap'
   append_file 'app/assets/stylesheets/application.scss', '@import "bootstrap";'
   append_file 'app/assets/stylesheets/application.scss', '@import "font-awesome";'
-  run "curl https://raw.github.com/timcheadle/rails-templates/master/application.html.erb -o app/views/layouts/application.html.erb"
-  run "curl https://raw.github.com/timcheadle/rails-templates/master/_header.html.erb -o app/views/layouts/_header.html.erb"
-  run "curl https://raw.github.com/timcheadle/rails-templates/master/_footer.html.erb -o app/views/layouts/_footer.html.erb"
-  run "curl https://raw.github.com/timcheadle/rails-templates/master/index.html.erb -o app/views/welcome/index.html.erb"
+  run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/application.html.erb -o app/views/layouts/application.html.erb"
+  run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/_header.html.erb -o app/views/layouts/_header.html.erb"
+  run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/_footer.html.erb -o app/views/layouts/_footer.html.erb"
+  run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/index.html.erb -o app/views/welcome/index.html.erb"
 else
   puts "Please inspect your Gemfile to remove the gem"
   puts "Also modify app/views/layouts/application.html.erb file to remove Bootstrap-style layout"
