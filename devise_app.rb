@@ -151,11 +151,10 @@ generate "devise:install"
 generate "devise User"
 generate "devise:views"
 
-rake "db:migrate db:test:prepare"
+rake "db:migrate"
 
 # Handles two suggestions from Devise install process
-
-environment "config.action_mailer.default_url_options = {host: 'localhost:#{port}'}", env: 'development'
+environment "config.action_mailer.default_url_options = {host: '#{app_name}.dev'}", env: 'development'
 
 generate "controller welcome index"
 
