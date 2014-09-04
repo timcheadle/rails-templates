@@ -1,7 +1,7 @@
 require 'rbconfig'
 
-def append_file_line(file, txt, *args)
-  append_file file, "#{txt}\n", args
+def append_file_line(file, txt)
+  append_file file, "#{txt}\n"
 end
 
 # Standardize on postgres
