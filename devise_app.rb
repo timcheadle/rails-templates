@@ -1,5 +1,9 @@
 require 'rbconfig'
 
+def append_file_line(file, txt, *args)
+  append_file file, "#{txt}\n", args
+end
+
 # Standardize on postgres
 #   Check/assume logged-in user can create databases
 #   Use min_warnings
@@ -184,11 +188,13 @@ run "rm app/assets/stylesheets/application.css; touch app/assets/stylesheets/app
 # Installs twitter bootstrap
 #
 if yes?("Use Twitter bootstrap?")
-  append_file 'app/assets/javascripts/application.js', '//= require bootstrap'
-  append_file 'app/assets/stylesheets/application.scss', '@import "bootstrap";'
-  append_file 'app/assets/stylesheets/application.scss', '@import "font-awesome";'
+  append_file_line 'app/assets/javascripts/application.js', '//= require bootstrap'
+  append_file_line 'app/assets/stylesheets/application.scss', '@import "bootstrap-sprockets";'
+  append_file_line 'app/assets/stylesheets/application.scss', '@import "bootstrap";'
+  append_file_line 'app/assets/stylesheets/application.scss', '@import "font-awesome-sprockets";'
+  append_file_line 'app/assets/stylesheets/application.scss', '@import "font-awesome";'
   run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/application.html.erb -o app/views/layouts/application.html.erb"
-  run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/_header.html.erb -o app/views/layouts/_header.html.erb"
+  run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/_header-devise.html.erb -o app/views/layouts/_header.html.erb"
   run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/_footer.html.erb -o app/views/layouts/_footer.html.erb"
   run "curl -L https://raw.githubusercontent.com/timcheadle/rails-templates/master/index.html.erb -o app/views/welcome/index.html.erb"
 else
