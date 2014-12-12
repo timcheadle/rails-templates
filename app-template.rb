@@ -39,9 +39,6 @@ gem_group :test do
   gem 'database_cleaner'
 end
 
-# Remove turbolinks
-gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
-
 #
 # Environment
 #
@@ -78,9 +75,12 @@ end
 #
 replace_file '.gitignore'
 
+# Remove turbolinks
+gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
+
 inside 'app' do
   inside 'helpers' do
-    copy_file 'application_helper.rb'
+    replace_file 'application_helper.rb'
   end
 end
 
@@ -119,6 +119,7 @@ inside 'app' do
   inside 'assets' do
     inside 'javascripts' do
       append_file_line 'application.js', '//= require bootstrap'
+      gsub_file "Gemfile", /\/\/=\s+require turbolinks.*$/, ''
     end
 
     inside 'stylesheets' do
