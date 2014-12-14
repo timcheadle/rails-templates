@@ -92,6 +92,7 @@ end
 inside 'spec/support' do
   copy_file 'capybara.rb'
   copy_file 'db_cleaner.rb'
+  copy_file 'devise.rb'
   copy_file 'focus.rb'
 end
 
