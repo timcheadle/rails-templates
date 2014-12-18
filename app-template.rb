@@ -75,9 +75,6 @@ end
 #
 replace_file '.gitignore'
 
-# Remove turbolinks
-gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
-
 inside 'app' do
   inside 'helpers' do
     replace_file 'application_helper.rb'
@@ -113,6 +110,9 @@ route "root to: 'welcome#index'"
 # Use SCSS instead of CSS
 run "rm app/assets/stylesheets/application.css; touch app/assets/stylesheets/application.scss"
 
+# Remove turbolinks
+gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
+
 #
 # Twitter Bootstrap
 #
@@ -120,7 +120,7 @@ inside 'app' do
   inside 'assets' do
     inside 'javascripts' do
       append_file_line 'application.js', '//= require bootstrap'
-      gsub_file "Gemfile", /\/\/=\s+require turbolinks.*$/, ''
+      gsub_file "application.js", /.*\/\/=\s+require turbolinks.*$/, ''
     end
 
     inside 'stylesheets' do
@@ -128,6 +128,7 @@ inside 'app' do
       append_file_line 'application.scss', '@import "bootstrap";'
       append_file_line 'application.scss', '@import "font-awesome-sprockets";'
       append_file_line 'application.scss', '@import "font-awesome";'
+      gsub_file "application.scss", /^.*require turbolinks.*$/, ''
     end
   end
 
