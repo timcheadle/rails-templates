@@ -1,8 +1,11 @@
-require 'rbconfig'
-
 def append_file_line(file, txt)
   append_file file, "#{txt}\n"
 end
+
+#
+# Options
+#
+install_devise = yes?("Do you want to use Devise?")
 
 # Standardize on postgres
 #   Check/assume logged-in user can create databases
@@ -12,6 +15,7 @@ end
 #
 gem "pg"
 
+gem 'devise' if install_devise
 gem 'bootstrap-sass'
 gem 'font-awesome-sass'
 gem 'bootstrap_form', github: 'bootstrap-ruby/rails-bootstrap-forms'
@@ -89,9 +93,11 @@ end
 inside 'spec/support' do
   copy_file 'capybara.rb'
   copy_file 'db_cleaner.rb'
-  copy_file 'devise.rb'
   copy_file 'focus.rb'
 end
+
+# Remove turbolinks
+gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
 
 #
 # Setup
@@ -99,19 +105,35 @@ end
 run "bundle install"
 
 generate "rspec:install"
+run 'mkdir spec/features'
 run "bundle exec guard init"
+
+generate "controller welcome index"
+route "root to: 'welcome#index'"
+
+#
+# Devise
+#
+if install_devise
+  generate "devise:install"
+  generate "devise User"
+  generate "devise:views"
+  environment "config.action_mailer.default_url_options = {host: 'localhost:3000'}", env: 'development'
+
+  inside 'spec' do
+    replace_file 'factories/users.rb'
+    copy_file 'features/login_spec.rb'
+    replace_file 'models/user_spec.rb'
+    copy_file 'support/devise.rb'
+  end
+end
+
+#
+# Database stuff
+#
 rake "db:create"
 rake "db:migrate"
 
-generate "controller welcome index"
-
-route "root to: 'welcome#index'"
-
-# Use SCSS instead of CSS
-run "rm app/assets/stylesheets/application.css; touch app/assets/stylesheets/application.scss"
-
-# Remove turbolinks
-gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
 
 #
 # Twitter Bootstrap
@@ -124,11 +146,8 @@ inside 'app' do
     end
 
     inside 'stylesheets' do
-      append_file_line 'application.scss', '@import "bootstrap-sprockets";'
-      append_file_line 'application.scss', '@import "bootstrap";'
-      append_file_line 'application.scss', '@import "font-awesome-sprockets";'
-      append_file_line 'application.scss', '@import "font-awesome";'
-      gsub_file "application.scss", /^.*require turbolinks.*$/, ''
+      remove_file 'application.css'
+      copy_file 'application.scss'
     end
   end
 
