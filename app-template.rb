@@ -69,8 +69,11 @@ def source_paths
 end
 
 def replace_file(filename)
-  remove_file filename
-  copy_file filename
+  copy_file filename, force: true
+end
+
+def replace_template(filename)
+  template filename, force: true
 end
 
 
@@ -86,14 +89,13 @@ inside 'app' do
 end
 
 inside 'config' do
-  remove_file 'database.yml'
-  template 'database.yml'
+  replace_template 'database.yml'
 end
 
 inside 'spec/support' do
-  copy_file 'capybara.rb'
-  copy_file 'db_cleaner.rb'
-  copy_file 'focus.rb'
+  replace_file 'capybara.rb'
+  replace_file 'db_cleaner.rb'
+  replace_file 'focus.rb'
 end
 
 # Remove turbolinks
@@ -122,9 +124,9 @@ if install_devise
 
   inside 'spec' do
     replace_file 'factories/users.rb'
-    copy_file 'features/login_spec.rb'
+    replace_file 'features/login_spec.rb'
     replace_file 'models/user_spec.rb'
-    copy_file 'support/devise.rb'
+    replace_file 'support/devise.rb'
   end
 end
 
@@ -147,15 +149,15 @@ inside 'app' do
 
     inside 'stylesheets' do
       remove_file 'application.css'
-      copy_file 'application.scss'
+      replace_file 'application.scss'
     end
   end
 
   inside 'views' do
     inside 'layouts' do
       replace_file 'application.html.erb'
-      copy_file '_header.html.erb'
-      copy_file '_footer.html.erb'
+      replace_file '_header.html.erb'
+      replace_file '_footer.html.erb'
     end
 
     inside 'welcome' do
