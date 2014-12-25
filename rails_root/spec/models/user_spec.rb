@@ -2,10 +2,10 @@ require 'rails_helper'
 
 RSpec.describe User, :type => :model do
   it 'has a valid factory' do
-    create(:user).should be_valid
+    expect( build(:user) ).to be_valid
   end
 
   it 'requires an email' do
-    build(:user, email: nil).should_not be_valid
+    expect( build(:user, email: nil) ).not_to be_valid
   end
 end

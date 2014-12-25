@@ -68,17 +68,17 @@ def source_paths
   [File.join(File.expand_path(File.dirname(__FILE__)),'rails_root')] + Array(super)
 end
 
-def replace_file(filename)
-  copy_file filename, force: true
+def replace_file(source, dest=nil)
+  copy_file source, dest, force: true
 end
 
-def replace_template(filename)
-  template filename, force: true
+def replace_template(source, dest=nil)
+  template source, dest, force: true
 end
 
 
 #
-# Files
+# Standard Files
 #
 replace_file '.gitignore'
 
@@ -92,11 +92,6 @@ inside 'config' do
   replace_template 'database.yml'
 end
 
-inside 'spec/support' do
-  replace_file 'capybara.rb'
-  replace_file 'db_cleaner.rb'
-  replace_file 'focus.rb'
-end
 
 # Remove turbolinks
 gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
@@ -105,13 +100,28 @@ gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
 # Setup
 #
 run "bundle install"
-
 generate "rspec:install"
-run 'mkdir spec/features'
 run "bundle exec guard init"
 
 generate "controller welcome index"
 route "root to: 'welcome#index'"
+
+#
+# rspec
+#
+run 'mkdir spec/features'
+
+inside 'spec' do
+  uncomment_lines 'rails_helper.rb', Regexp.new(Regexp.escape('Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }'))
+
+  inside 'support' do
+    replace_file 'capybara.rb'
+    replace_file 'db_cleaner.rb'
+    replace_file 'factory_girl.rb'
+    replace_file 'focus.rb'
+  end
+end
+
 
 #
 # Devise
@@ -133,7 +143,7 @@ end
 #
 # Database stuff
 #
-rake "db:create"
+rake "db:create:all"
 rake "db:migrate"
 
 
@@ -156,7 +166,7 @@ inside 'app' do
   inside 'views' do
     inside 'layouts' do
       replace_file 'application.html.erb'
-      replace_file '_header.html.erb'
+      replace_file (install_devise ? '_header.html.erb' : '_header-devise.html.erb'), '_header.html.erb'
       replace_file '_footer.html.erb'
     end
 
