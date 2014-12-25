@@ -166,7 +166,7 @@ inside 'app' do
   inside 'views' do
     inside 'layouts' do
       replace_file 'application.html.erb'
-      replace_file (install_devise ? '_header.html.erb' : '_header-devise.html.erb'), '_header.html.erb'
+      replace_file (install_devise ? '_header-devise.html.erb' : '_header.html.erb'), '_header.html.erb'
       replace_file '_footer.html.erb'
     end
 
