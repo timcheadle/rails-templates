@@ -93,8 +93,9 @@ inside 'config' do
 end
 
 
-# Remove turbolinks
-gsub_file "Gemfile", /^gem\s+["']turbolinks["'].*$/,''
+# Remove turbolinks, coffeescript
+comment_lines "Gemfile", /turbolinks/
+comment_lines "Gemfile", /coffee-rails/
 
 #
 # Setup
